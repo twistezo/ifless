@@ -1,4 +1,3 @@
-// Helper: sprawdza czy obiekt zawiera funkcje jako wartości
 const assertNoFunctions = (context: Record<string, unknown>): void => {
   for (const [key, value] of Object.entries(context)) {
     if (typeof value === 'function') {
@@ -7,7 +6,6 @@ const assertNoFunctions = (context: Record<string, unknown>): void => {
   }
 }
 
-// Nakładka: obsługa when.ctx
 type WhenCtx = (
   context: Record<string, unknown>,
 ) => (strings: TemplateStringsArray, ...values: Operand[]) => (fn: () => void) => void
@@ -39,10 +37,8 @@ const whenCtx: WhenCtx = context => {
   }
 }
 
-// Any value that can be used as a logic operand
 export type Operand = unknown
 
-// Converts any value to boolean, treating null/undefined as false
 const toBoolean = (value: Operand): boolean => {
   if (typeof value === 'function') {
     return Boolean(value())
@@ -51,7 +47,6 @@ const toBoolean = (value: Operand): boolean => {
   return value !== null && value !== undefined && Boolean(value)
 }
 
-// Builds a string representation of the template literal with placeholders
 const buildExpressionString = (strings: TemplateStringsArray, values: Operand[]): string => {
   let result = ''
   strings.forEach((str, i) => {
@@ -63,7 +58,6 @@ const buildExpressionString = (strings: TemplateStringsArray, values: Operand[])
   return result
 }
 
-// Tokenizes the logic expression, replacing natural language operators
 const tokenizeExpression = (expression: string): string[] =>
   expression
     .replace(/\bAND\b/g, '&&')
@@ -72,7 +66,6 @@ const tokenizeExpression = (expression: string): string[] =>
     .split(/(\s+|\(|\))/)
     .filter(token => token.trim().length > 0)
 
-// Returns a function that evaluates the operand at runtime
 const parseOperand = (token: string, values: Operand[]): (() => boolean) | string => {
   if (token.startsWith('${')) {
     const valueIndex = parseInt(token.slice(2, -1))
@@ -87,7 +80,6 @@ type EvalState = {
   values: Operand[]
 }
 
-// Evaluates a single token (operand, operator, or parenthesis)
 const evaluateToken = (
   state: EvalState,
   evaluateExpression: (state: EvalState) => boolean,
@@ -118,7 +110,6 @@ const evaluateToken = (
   return token
 }
 
-// Evaluates a full expression (recursive descent)
 const evaluateExpression = (state: EvalState): boolean => {
   let left = evaluateToken(state, evaluateExpression)
   if (typeof left === 'function') {
@@ -162,13 +153,11 @@ const evaluateExpression = (state: EvalState): boolean => {
   return left as boolean
 }
 
-// Entry point for evaluating tokenized expressions
 const evaluateTokens = (tokens: string[], values: Operand[]): boolean => {
   const state: EvalState = { index: 0, tokens, values }
   return evaluateExpression(state)
 }
 
-// Główna funkcja when (oryginalna logika)
 type WhenFn = ((
   strings: TemplateStringsArray,
   ...values: Operand[]
