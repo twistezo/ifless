@@ -1,6 +1,6 @@
 {
   "name": "@twistezo/ifless",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "twistezo",
   "license": "MIT",
   "description": "Conditional logic using natural language operators through template literals.",
