@@ -1,10 +1,20 @@
+<div align="center">
+
 # ifless
+
+![](https://img.shields.io/npm/v/@twistezo/ifless?style=flat-square&color=9cf)
+![](https://img.shields.io/npm/dt/@twistezo/ifless?style=flat-square&color=9cf)
+![](https://img.shields.io/npm/l/@twistezo/ifless?style=flat-square&color=yellow)
+
+</div>
+
+<div align="center">
+
+</div>
 
 Conditional logic expressed using natural-language operators via JavaScript template literals.
 
-Why?
-
-An experimental project for fun and learning, exploring alternative syntax for conditional logic.
+Why? An experimental project for fun and learning, exploring alternative syntax for conditional logic.
 
 ## Usage
 
