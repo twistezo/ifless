@@ -8,4 +8,19 @@ describe('Empty parentheses', () => {
     when`((()))`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles nested empty parentheses with AND/OR', () => {
+    const fn = vi.fn()
+    when`((())) AND ((()))`(fn)
+    expect(fn).toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`((())) OR ((()))`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
+
+  it('handles empty parentheses with NOT', () => {
+    const fn = vi.fn()
+    when`NOT ((()))`(fn)
+    expect(fn).not.toHaveBeenCalled()
+  })
 })

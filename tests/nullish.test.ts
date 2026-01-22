@@ -18,4 +18,28 @@ describe('Null/undefined as false', () => {
     when`${obj2.x ?? false}`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles multiple nullish values', () => {
+    const fn = vi.fn()
+    const a = undefined
+    const b = null
+    const c = false
+    when`${a ?? b ?? c}`(fn)
+    expect(fn).not.toHaveBeenCalled()
+    const d = 1
+    const fn2 = vi.fn()
+    when`${a ?? b ?? d}`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
+
+  it('handles nullish with AND/OR', () => {
+    const fn = vi.fn()
+    const a = null
+    const b = 0
+    when`${a ?? b} AND ${true}`(fn)
+    expect(fn).not.toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`${a ?? 1} OR ${false}`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
 })

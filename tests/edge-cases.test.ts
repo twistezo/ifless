@@ -17,4 +17,22 @@ describe('Edge cases', () => {
     when`(((((((((((${true})))))))))))`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles empty template', () => {
+    const fn = vi.fn()
+    when``(fn)
+    expect(fn).toHaveBeenCalled()
+  })
+
+  it('handles only operators and whitespace', () => {
+    const fn = vi.fn()
+    when`   AND   OR   `(fn)
+    expect(fn).toHaveBeenCalled()
+  })
+
+  it('handles only parentheses', () => {
+    const fn = vi.fn()
+    when`(((())))`(fn)
+    expect(fn).toHaveBeenCalled()
+  })
 })

@@ -20,4 +20,22 @@ describe('Logical NOT (NOT, !)', () => {
     when`!${false}`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles double negation', () => {
+    const fn = vi.fn()
+    when`NOT NOT ${true}`(fn)
+    expect(fn).toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`!!${false}`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
+
+  it('handles NOT with parentheses', () => {
+    const fn = vi.fn()
+    when`NOT (${false} OR ${false})`(fn)
+    expect(fn).toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`NOT (${true} AND ${true})`(fn2)
+    expect(fn2).not.toHaveBeenCalled()
+  })
 })

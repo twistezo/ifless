@@ -21,4 +21,21 @@ describe('Various operand types', () => {
     when`${nul} OR ${und}`(fn2)
     expect(fn2).not.toHaveBeenCalled()
   })
+
+  it('handles mixed types in complex expressions', () => {
+    const fn = vi.fn()
+    const sym = Symbol('y')
+    const big = BigInt(0)
+    const arr = []
+    const obj = {}
+    const str = ''
+    const num = 0
+    const bool = false
+    const fun = () => false
+    when`${sym} OR ${big} OR ${arr} OR ${obj} OR ${str} OR ${num} OR ${bool} OR ${fun}`(fn)
+    expect(fn).toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`${str} AND ${num} AND ${bool}`(fn2)
+    expect(fn2).not.toHaveBeenCalled()
+  })
 })

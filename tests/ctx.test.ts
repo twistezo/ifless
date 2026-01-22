@@ -41,4 +41,23 @@ describe('when.ctx context logic', () => {
     when.ctx({ userActive: user.active })`#userActive`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles context with falsy values', () => {
+    const fn = vi.fn()
+    when.ctx({ a: 0, b: false })`#a AND #b`(fn)
+    expect(fn).not.toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when.ctx({ a: 1, b: true })`#a AND #b`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
+
+  it('handles context with null and undefined', () => {
+    const fn = vi.fn()
+    when.ctx({ a: null, b: undefined })`#a OR #b`(fn)
+    expect(fn).not.toHaveBeenCalled()
+  })
+
+  it('throws if context is empty and #var is used', () => {
+    expect(() => when.ctx({})`#missing`(() => {})).toThrow('Unknown context variable: #missing')
+  })
 })

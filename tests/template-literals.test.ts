@@ -15,4 +15,20 @@ describe('Template literals with embedded values', () => {
     when`${1} AND ${'nonempty'} AND ${[]} AND ${{}}`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles template with expressions and functions', () => {
+    const fn = vi.fn()
+    const a = 1
+    const b = () => true
+    when`${a + 1} AND ${b}`(fn)
+    expect(fn).toHaveBeenCalled()
+  })
+
+  it('handles template with nested template literals', () => {
+    const fn = vi.fn()
+    const a = 'x'
+    const b = `y${a}`
+    when`${a} AND ${b}`(fn)
+    expect(fn).toHaveBeenCalled()
+  })
 })

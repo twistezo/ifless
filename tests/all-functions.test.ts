@@ -19,4 +19,35 @@ describe('All operands as functions (short-circuit at every step)', () => {
     expect(fns[3]).toHaveBeenCalled()
     expect(fns[4]).not.toHaveBeenCalled()
   })
+
+  it('handles nested function operands', () => {
+    const f1 = vi.fn(() => true)
+    const f2 = vi.fn(() => false)
+    const f3 = vi.fn(() => true)
+    const f4 = vi.fn(() => false)
+    // (true && false) || true
+    when`${() => f1() && f2()} OR ${f3}`(() => {})
+    expect(f1).toHaveBeenCalled()
+    expect(f2).toHaveBeenCalled()
+    expect(f3).toHaveBeenCalled()
+    // (false || false) && true
+    when`${() => f2() || f4()} AND ${f1}`(() => {})
+    expect(f4).toHaveBeenCalled()
+    expect(f1).toHaveBeenCalledTimes(1)
+  })
+
+  it('handles functions returning non-boolean', () => {
+    const f1 = vi.fn(() => 1)
+    const f2 = vi.fn(() => '')
+    when`${f1} AND ${f2}`(() => {})
+    expect(f1).toHaveBeenCalled()
+    expect(f2).toHaveBeenCalled()
+  })
+
+  it('handles function throwing error', () => {
+    const f1 = vi.fn(() => {
+      throw new Error('fail')
+    })
+    expect(() => when`${f1}`(() => {})).toThrow()
+  })
 })

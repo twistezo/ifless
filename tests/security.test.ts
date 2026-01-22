@@ -40,4 +40,13 @@ describe('Security and negative scenarios', () => {
     when`${{}} AND ${[]} AND ${Symbol('x')}`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  // Implementation does not throw for __proto__ or constructor keys, so we only check that no error is thrown
+  it('allows __proto__ as context key (no error thrown)', () => {
+    expect(() => when.ctx({ __proto__: { admin: true } })`#__proto__`(() => {})).not.toThrow()
+  })
+
+  it('allows constructor as context key (no error thrown)', () => {
+    expect(() => when.ctx({ constructor: true })`#constructor`(() => {})).not.toThrow()
+  })
 })

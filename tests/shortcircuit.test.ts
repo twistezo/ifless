@@ -24,4 +24,26 @@ describe('Short-circuit evaluation (lazy function calls)', () => {
     when`${a} AND ${b}`(() => {})
     expect(fn).toHaveBeenCalled()
   })
+
+  it('short-circuits OR with first true', () => {
+    const fn = vi.fn()
+    const a = true
+    const b = () => {
+      fn()
+      return false
+    }
+    when`${a} OR ${b}`(() => {})
+    expect(fn).not.toHaveBeenCalled()
+  })
+
+  it('calls function in OR if needed', () => {
+    const fn = vi.fn()
+    const a = false
+    const b = () => {
+      fn()
+      return true
+    }
+    when`${a} OR ${b}`(() => {})
+    expect(fn).toHaveBeenCalled()
+  })
 })

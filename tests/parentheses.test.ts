@@ -17,4 +17,19 @@ describe('Parentheses for grouping and nesting', () => {
     when`(((((((((((${true})))))))))))`(fn)
     expect(fn).toHaveBeenCalled()
   })
+
+  it('handles parentheses with all operators', () => {
+    const fn = vi.fn()
+    when`(${true} AND (${false} OR (${true} AND NOT ${false})))`(fn)
+    expect(fn).toHaveBeenCalled()
+  })
+
+  it('handles empty parentheses in complex expression', () => {
+    const fn = vi.fn()
+    when`((())) AND (${true})`(fn)
+    expect(fn).toHaveBeenCalled()
+    const fn2 = vi.fn()
+    when`((())) OR (${false})`(fn2)
+    expect(fn2).toHaveBeenCalled()
+  })
 })
