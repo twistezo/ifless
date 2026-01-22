@@ -69,7 +69,6 @@ const tokenizeExpression = (expression: string): string[] =>
     .replace(/\bAND\b/g, '&&')
     .replace(/\bOR\b/g, '||')
     .replace(/\bNOT\b/g, '!')
-    .replace(/\bXOR\b/g, '^')
     .split(/(\s+|\(|\))/)
     .filter(token => token.trim().length > 0)
 
@@ -142,15 +141,6 @@ const evaluateExpression = (state: EvalState): boolean => {
           right = right()
         }
         left = left && right
-        break
-      }
-      case '^': {
-        // XOR
-        let right = evaluateToken(state, evaluateExpression)
-        if (typeof right === 'function') {
-          right = right()
-        }
-        left = Boolean(left) !== Boolean(right)
         break
       }
       case '||': {
