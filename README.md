@@ -118,7 +118,7 @@ when.ctx({
     when.ctx({ a, b })`#a AND #b`(() => {})
     ```
 
-- Arbitrary nesting and combinations of all above
+- Arbitrary nesting
   - Before:
     ```ts
     if ((a && b) || (!c && (d || e)))
