@@ -1,3 +1,44 @@
+// Helper: sprawdza czy obiekt zawiera funkcje jako wartości
+const assertNoFunctions = (context: Record<string, unknown>): void => {
+  for (const [key, value] of Object.entries(context)) {
+    if (typeof value === 'function') {
+      throw new Error(`Functions are not allowed in context: ${key}`)
+    }
+  }
+}
+
+// Nakładka: obsługa when.ctx
+type WhenCtx = (
+  context: Record<string, unknown>,
+) => (strings: TemplateStringsArray, ...values: Operand[]) => (fn: () => void) => void
+
+const whenCtx: WhenCtx = context => {
+  assertNoFunctions(context)
+  return (strings: TemplateStringsArray, ...values: Operand[]) => {
+    let expr = ''
+    const ctxValues: Operand[] = []
+    strings.forEach((str, i) => {
+      expr += str.replace(/#([a-zA-Z0-9_.$]+)/g, (_, name) => {
+        if (!(name in context)) {
+          throw new Error(`Unknown context variable: #${name}`)
+        }
+        ctxValues.push(context[name])
+        return '${' + (ctxValues.length - 1) + '}'
+      })
+      if (i < values.length) {
+        expr += '${' + (ctxValues.length + i) + '}'
+      }
+    })
+    const allValues = [...ctxValues, ...values]
+    return (fn: () => void) => {
+      const tokens = tokenizeExpression(expr)
+      if (evaluateTokens(tokens, allValues)) {
+        fn()
+      }
+    }
+  }
+}
+
 // Any value that can be used as a logic operand
 export type Operand = unknown
 
@@ -137,16 +178,24 @@ const evaluateTokens = (tokens: string[], values: Operand[]): boolean => {
   return evaluateExpression(state)
 }
 
-// Main API: tagged template for logic expressions
-export const when = (strings: TemplateStringsArray, ...values: Operand[]) => {
-  const expression = buildExpressionString(strings, values)
+// Główna funkcja when (oryginalna logika)
+type WhenFn = ((
+  strings: TemplateStringsArray,
+  ...values: Operand[]
+) => (fn: () => void) => void) & {
+  ctx: WhenCtx
+}
 
+const whenBase = (strings: TemplateStringsArray, ...values: Operand[]) => {
+  const expression = buildExpressionString(strings, values)
   const evaluate = (fn: () => void): void => {
     const tokens = tokenizeExpression(expression)
     if (evaluateTokens(tokens, values)) {
       fn()
     }
   }
-
   return evaluate
 }
+
+export const when = whenBase as WhenFn
+when.ctx = whenCtx

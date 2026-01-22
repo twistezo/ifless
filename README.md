@@ -109,6 +109,46 @@ Elegant, readable conditional logic for JavaScript/TypeScript using natural lang
     when`(${a} AND ${b}) OR (NOT ${c} AND (${d} OR ${e}))`(() => do())
     ```
 
+## New: Contextual Logic with `when.ctx()`
+
+You can now define a context object and reference its properties in your logic expressions using `#alias` syntax. This is useful for readable, alias-based logic and for passing values without direct variable interpolation.
+
+### Usage
+
+```ts
+import { when } from 'ifless'
+
+const user = { active: true }
+const isAdmin = false
+
+when.ctx({ userActive: user.active, isAdmin })`#userActive AND NOT #isAdmin`(() => {
+  // This block runs if user.active is true and isAdmin is false
+})
+```
+
+#### Features
+
+- **Reference context variables**: Use `#name` in your template to refer to values from the context object.
+- **Alias support**: You can alias any value to a short or descriptive name.
+- **Error on missing or invalid context**: Throws if you reference a `#name` not in the context, or if the context contains a function.
+- **No functions in context**: Context values must not be functions.
+
+#### Example
+
+```ts
+const foo = 1
+const bar = 2
+
+when.ctx({ x: foo, y: bar })`#x AND #y`(() => {
+  // Runs if both foo and bar are truthy
+})
+```
+
+#### Error Handling
+
+- Throws `Unknown context variable: #name` if you reference a variable not in the context.
+- Throws `Functions are not allowed in context` if you try to pass a function as a context value.
+
 ## Usage
 
 ### Install
