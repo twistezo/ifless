@@ -121,8 +121,18 @@ npm install ifless
 
 ### Import and use
 
+#### ESM (ECMAScript Modules)
+
 ```ts
 import { when } from 'ifless'
+
+when`${a} AND ${b}`(() => do())
+```
+
+#### CommonJS (CJS)
+
+```js
+const { when } = require('ifless')
 
 when`${a} AND ${b}`(() => do())
 ```
