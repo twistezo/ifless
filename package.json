@@ -42,10 +42,11 @@
     "test:integration": "bun run test:integration:esm && bun run test:integration:cjs",
     "test:integration:esm": "bun run build && bun tests/integration/test-dist-esm.mjs",
     "test:integration:cjs": "bun run build && node tests/integration/test-dist-cjs.cjs",
-    "lint": "bun run eslint src tests --ext ts",
-    "lint:fix": "bun run eslint src tests --ext ts --fix",
+    "lint": "bun run eslint src tests examples --ext ts",
+    "lint:fix": "bun run eslint src tests examples --ext ts --fix",
     "typecheck": "bun run tsc --noEmit",
-    "prepublish": "bun run test && bun run lint && bun run typecheck"
+    "prepublish": "bun run test && bun run lint && bun run typecheck",
+    "example": "bun run build:esm && bun run examples/main.ts"
   },
   "peerDependencies": {
     "typescript": "^5"
