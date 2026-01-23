@@ -1,5 +1,3 @@
-import type { Operand } from './types'
-
 import { evaluateExpression } from './expression'
 
 export type EvaluationResult = (() => boolean) | boolean | Token
@@ -8,6 +6,7 @@ export type EvaluationState = {
   tokens: Token[]
   values: Operand[]
 }
+export type Operand = unknown
 export type Token = string
 
 export const tokenizeExpression = (expression: string): Token[] =>

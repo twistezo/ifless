@@ -1,6 +1,10 @@
-import type { Operand } from './types'
-
-import { evaluateToken, type EvaluationResult, type EvaluationState, type Token } from './token'
+import {
+  evaluateToken,
+  type EvaluationResult,
+  type EvaluationState,
+  type Operand,
+  type Token,
+} from './token'
 
 export const buildExpression = (strings: TemplateStringsArray, values: Operand[]): string => {
   let result: string = ''

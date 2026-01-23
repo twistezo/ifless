@@ -1,6 +1,4 @@
-import type { Operand } from './types'
-
-import { evaluateTokens, tokenizeExpression } from './token'
+import { evaluateTokens, type Operand, tokenizeExpression } from './token'
 
 export type WhenCtx = (
   context: Record<string, unknown>,

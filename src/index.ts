@@ -13,13 +13,13 @@ console.log('isAdmin', isAdmin)
 console.log('\n')
 console.groupEnd()
 
-when`${user.active} AND NOT ${isAdmin}`(() => {
-  console.log('\n\nwhen: condition met')
-})
-
-// when.ctx({
-//   admin: isAdmin,
-//   userActive: user.active,
-// })`#userActive AND NOT #admin`(() => {
-//   console.log('when.ctx: condition met')
+// when`${user.active} AND NOT ${isAdmin}`(() => {
+//   console.log('\n\nwhen: condition met')
 // })
+
+when.ctx({
+  admin: isAdmin,
+  userActive: user.active,
+})`#userActive AND NOT #admin`(() => {
+  console.log('when.ctx: condition met')
+})
