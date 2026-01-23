@@ -32,9 +32,8 @@ export const evaluateToken = (
   evaluateExpression: (state: EvaluationState) => boolean,
 ): EvaluationResult => {
   const { tokens, values } = state
-  console.log('state:', state)
-
   const token: Token = tokens[state.index++]
+
   if (!token) {
     // falsy token
     return true

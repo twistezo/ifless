@@ -1,29 +1,24 @@
-import { evaluateTokens, type Operand, tokenizeExpression } from './token'
+import type { WhenBaseResult } from './when'
 
-export type WhenCtx = (
-  context: Record<string, unknown>,
-) => (strings: TemplateStringsArray, ...values: Operand[]) => (fn: () => void) => void
+import { buildAliasedExpression } from './expression'
+import { evaluateTokens, type Operand, type Token, tokenizeExpression } from './token'
 
-export const whenCtx: WhenCtx = context => {
-  assertNoFunctions(context)
-  return (strings: TemplateStringsArray, ...values: Operand[]) => {
-    let expr = ''
-    const ctxValues: Operand[] = []
-    strings.forEach((str, i) => {
-      expr += str.replace(/#([a-zA-Z0-9_.$]+)/g, (_, name) => {
-        if (!(name in context)) {
-          throw new Error(`Unknown context variable: #${name}`)
-        }
-        ctxValues.push(context[name])
-        return '${' + (ctxValues.length - 1) + '}'
-      })
-      if (i < values.length) {
-        expr += '${' + (ctxValues.length + i) + '}'
-      }
-    })
-    const allValues = [...ctxValues, ...values]
+export type AllowedValue = boolean | null | number | string | undefined
+
+export type WhenContext = (
+  context: Record<string, AllowedValue>,
+) => (strings: TemplateStringsArray, ...values: Operand[]) => WhenBaseResult
+
+export const whenContext: WhenContext = context => {
+  void assertNoFunctions(context)
+
+  return (strings: TemplateStringsArray, ...values: Operand[]): WhenBaseResult => {
+    const { contextValues, expression } = buildAliasedExpression(strings, values, context)
+    const allValues: Operand[] = [...contextValues, ...values]
+
     return (fn: () => void) => {
-      const tokens = tokenizeExpression(expr)
+      const tokens: Token[] = tokenizeExpression(expression)
+
       if (evaluateTokens(tokens, allValues)) {
         fn()
       }
@@ -31,7 +26,7 @@ export const whenCtx: WhenCtx = context => {
   }
 }
 
-const assertNoFunctions = (context: Record<string, unknown>): void => {
+const assertNoFunctions = (context: Record<string, AllowedValue>): void => {
   for (const [key, value] of Object.entries(context)) {
     if (typeof value === 'function') {
       throw new Error(`Functions are not allowed in context: ${key}`)

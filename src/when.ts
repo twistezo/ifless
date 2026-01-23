@@ -1,20 +1,20 @@
+import type { WhenContext } from './context'
+
 import { buildExpression } from './expression'
 import { evaluateTokens, type Operand, type Token, tokenizeExpression } from './token'
 
-export type WhenBaseFn = (strings: TemplateStringsArray, ...values: Operand[]) => WhenBaseResult
-type WhenBaseResult = (fn: () => void) => void
+export type WhenBase = ((strings: TemplateStringsArray, ...values: Operand[]) => WhenBaseResult) &
+  Partial<{
+    ctx: WhenContext
+  }>
 
-// && {
-//   ctx: WhenCtx
-// }
+export type WhenBaseResult = (fn: () => void) => void
 
-export const whenBase: WhenBaseFn = (strings, ...values) => {
+export const whenBase: WhenBase = (strings, ...values) => {
   const expression: string = buildExpression(strings, values)
-  console.log('Built expression:', expression)
 
   const evaluate: WhenBaseResult = (fn: () => void): void => {
     const tokens: Token[] = tokenizeExpression(expression)
-    console.log('Tokenized expression:', tokens)
 
     if (evaluateTokens(tokens, values)) {
       fn()
