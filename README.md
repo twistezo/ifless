@@ -143,7 +143,6 @@ bun run lint        # check lint
 bun run lint:fix    # fix lint & format
 bun run typecheck   # check types
 
-
 bunx npm login      # login to npm
 bun publish         # publish to npm
 ```
