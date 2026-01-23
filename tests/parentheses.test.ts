@@ -24,12 +24,10 @@ describe('Parentheses for grouping and nesting', () => {
     expect(fn).toHaveBeenCalled()
   })
 
-  it('handles empty parentheses in complex expression', () => {
+  it('throws on empty parentheses in complex expression', () => {
     const fn = vi.fn()
-    when`((())) AND (${true})`(fn)
-    expect(fn).toHaveBeenCalled()
+    expect(() => when`((())) AND (${true})`(fn)).toThrow('Unexpected token: {"type":"rparen"}')
     const fn2 = vi.fn()
-    when`((())) OR (${false})`(fn2)
-    expect(fn2).toHaveBeenCalled()
+    expect(() => when`((())) OR (${false})`(fn2)).toThrow('Unexpected token: {"type":"rparen"}')
   })
 })

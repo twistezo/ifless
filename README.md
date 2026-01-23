@@ -1,6 +1,9 @@
 <div align="center">
 
-# ifless
+## TL;DR
+
+Akceptuje: `${value}`, `#alias`, operatory `AND`, `OR`, `NOT`, nawiasy
+Nie akceptuje: inne słowa, puste nawiasy, podwójna negacja, alias bez wartości w context, funkcji w context
 
 ![](https://img.shields.io/npm/v/@twistezo/ifless?style=flat-square&color=9cf)
 ![](https://img.shields.io/npm/dt/@twistezo/ifless?style=flat-square&color=9cf)
@@ -59,6 +62,14 @@ when.ctx({
   console.log('condition met')
 })
 ```
+
+## Limitations
+
+Accepted: `${value}`, `#alias`, operators `AND`, `OR`, `NOT`, parentheses
+
+Not accepted: other words, empty parentheses, double negation (`NOT NOT`, `!!${value}`, `#{!!value}`), alias without value in context, functions in context
+
+---
 
 ## Supported logic and features
 

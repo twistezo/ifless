@@ -14,10 +14,9 @@ describe('Security and negative scenarios', () => {
     expect(fn).toHaveBeenCalled()
   })
 
-  it('handles invalid operators', () => {
+  it('throws on invalid operators', () => {
     const fn = vi.fn()
-    when`???`(fn)
-    expect(fn).toHaveBeenCalled()
+    expect(() => when`???`(fn)).toThrow('Invalid token: ???')
   })
 
   it('does not execute code injection', () => {

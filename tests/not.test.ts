@@ -15,19 +15,17 @@ describe('Logical NOT (NOT, !)', () => {
     expect(fn).not.toHaveBeenCalled()
   })
 
-  it('works with ! as alias', () => {
+  it('throws on ! as alias for interpolated value', () => {
     const fn = vi.fn()
-    when`!${false}`(fn)
-    expect(fn).toHaveBeenCalled()
+    expect(() => when`!${false}`(fn)).toThrow('Invalid token: !${0}')
   })
 
-  it('handles double negation', () => {
+  it('handles double negation for NOT keyword, throws for !! on interpolated value', () => {
     const fn = vi.fn()
     when`NOT NOT ${true}`(fn)
     expect(fn).toHaveBeenCalled()
     const fn2 = vi.fn()
-    when`!!${false}`(fn2)
-    expect(fn2).toHaveBeenCalled()
+    expect(() => when`!!${false}`(fn2)).toThrow('Invalid token: !!${0}')
   })
 
   it('handles NOT with parentheses', () => {

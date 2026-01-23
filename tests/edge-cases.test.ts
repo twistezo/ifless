@@ -24,15 +24,13 @@ describe('Edge cases', () => {
     expect(fn).toHaveBeenCalled()
   })
 
-  it('handles only operators and whitespace', () => {
+  it('throws on only operators and whitespace', () => {
     const fn = vi.fn()
-    when`   AND   OR   `(fn)
-    expect(fn).toHaveBeenCalled()
+    expect(() => when`   AND   OR   `(fn)).toThrow()
   })
 
-  it('handles only parentheses', () => {
+  it('throws on only parentheses', () => {
     const fn = vi.fn()
-    when`(((())))`(fn)
-    expect(fn).toHaveBeenCalled()
+    expect(() => when`(((())))`(fn)).toThrow()
   })
 })

@@ -26,11 +26,13 @@ describe('Realistic usage scenarios', () => {
     const fn = vi.fn()
     const user = { isAdmin: false, isBeta: true }
     const featureEnabled = true
-    when`${featureEnabled} AND (${user.isAdmin} OR ${user.isBeta})`(fn)
+    // Przekazujemy wartości jako booleany przez interpolację
+    when`${!!featureEnabled} AND (${!!user.isAdmin} OR ${!!user.isBeta})`(fn)
     expect(fn).toHaveBeenCalled()
     const fn2 = vi.fn()
-    when`${featureEnabled} AND (${user.isAdmin} OR false)`(fn2)
-    expect(fn2).toHaveBeenCalled() // user.isAdmin is false, so OR is false, but AND is true because featureEnabled is true
+    const orResult = !!user.isAdmin || false // false
+    when`${!!featureEnabled} AND ${orResult}`(fn2)
+    expect(fn2).not.toHaveBeenCalled() // user.isAdmin is false, OR is false, AND is false
   })
 
   it('handles permission check with context', () => {

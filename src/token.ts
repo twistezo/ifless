@@ -1,5 +1,3 @@
-import { evaluateExpression } from './expression'
-
 export type EvaluationResult = (() => boolean) | boolean | Token
 export type EvaluationState = {
   index: number
@@ -7,15 +5,35 @@ export type EvaluationState = {
   values: Operand[]
 }
 export type Operand = unknown
-export type Token = string
 
-export const tokenizeExpression = (expression: string): Token[] =>
-  expression
-    .replace(/\bAND\b/g, '&&') // replace 'AND' with '&&'
-    .replace(/\bOR\b/g, '||') // replace 'OR' with '||'
-    .replace(/\bNOT\b/g, '!') // replace 'NOT' with '!'
-    .split(/(\s+|\(|\))/) // split by whitespace, '(' or ')'
-    .filter((token: Token): boolean => token.trim().length > 0)
+export type Token =
+  | { index: number; type: 'operand' }
+  | { type: 'and' }
+  | { type: 'lparen' }
+  | { type: 'not' }
+  | { type: 'or' }
+  | { type: 'rparen' }
+
+export const tokenizeExpression = (expression: string): Token[] => {
+  const rawTokens = expression
+    .replace(/\bAND\b/g, '&&')
+    .replace(/\bOR\b/g, '||')
+    .replace(/\bNOT\b/g, '!')
+    .split(/(\s+|\(|\))/)
+    .filter(t => t.trim().length > 0)
+
+  return rawTokens.map(t => {
+    if (t === '&&') return { type: 'and' }
+    else if (t === '||') return { type: 'or' }
+    else if (t === '!') return { type: 'not' }
+    else if (t === '(') return { type: 'lparen' }
+    else if (t === ')') return { type: 'rparen' }
+    else if (/^\$\{\d+\}$/.test(t)) return { index: parseInt(t.slice(2, -1)), type: 'operand' }
+    else {
+      throw new Error(`Invalid token: ${t}`)
+    }
+  })
+}
 
 export const evaluateTokens = (tokens: Token[], values: Operand[]): boolean => {
   const state: EvaluationState = {
@@ -24,58 +42,61 @@ export const evaluateTokens = (tokens: Token[], values: Operand[]): boolean => {
     values,
   }
 
-  return evaluateExpression(state)
+  return parseOr(state)
 }
 
-export const evaluateToken = (
-  state: EvaluationState,
-  evaluateExpression: (state: EvaluationState) => boolean,
-): EvaluationResult => {
-  const { tokens, values } = state
-  const token: Token = tokens[state.index++]
+const parseOr = (state: EvaluationState): boolean => {
+  let left: boolean = parseAnd(state)
+  while (peek(state)?.type === 'or') {
+    next(state)
+    const right: boolean = parseAnd(state)
+    left = left || right
+  }
 
+  return left
+}
+
+const parseAnd = (state: EvaluationState): boolean => {
+  let left: boolean = parseUnary(state)
+  while (peek(state)?.type === 'and') {
+    next(state)
+    const right: boolean = parseUnary(state)
+    left = left && right
+  }
+
+  return left
+}
+
+const parseUnary = (state: EvaluationState): boolean => {
+  const token: Token | undefined = next(state)
   if (!token) {
-    // falsy token
     return true
   }
 
-  if (token === '!') {
-    // negation
-    const operand: Operand = evaluateToken(state, evaluateExpression)
-    if (typeof operand === 'function') {
-      // short-circuiting support
-      return () => !operand()
-    }
-    return !operand
+  if (token.type === 'not') {
+    return !parseUnary(state)
   }
 
-  if (token === '(') {
-    // recursive evaluation of sub-expression
-    const value = evaluateExpression(state)
-    state.index++ // skip ')'
+  if (token.type === 'lparen') {
+    const value: boolean = parseOr(state)
+    const closing: Token | undefined = next(state)
+
+    if (!closing || closing.type !== 'rparen') {
+      throw new SyntaxError('Missing closing parenthesis')
+    }
     return value
   }
 
-  if (token.startsWith('${')) {
-    return parseOperand(token, values)
+  if (token.type === 'operand') {
+    return toBoolean(state.values[token.index])
   }
-
-  return token
+  throw new SyntaxError(`Unexpected token: ${JSON.stringify(token)}`)
 }
 
-const parseOperand = (token: Token, values: Operand[]): (() => boolean) => {
-  const valueIndex: number = parseInt(token.slice(2, -1))
-
-  // returns function because short-circuiting
-  return () => toBoolean(values[valueIndex])
-}
+const peek = (state: EvaluationState): Token | undefined => state.tokens[state.index]
+const next = (state: EvaluationState): Token | undefined => state.tokens[state.index++]
 
 const toBoolean = (value: Operand): boolean => {
-  if (typeof value === 'function') {
-    return Boolean(value())
-  } else if (value === false || value === 0) {
-    return false
-  } else {
-    return Boolean(value)
-  }
+  if (typeof value === 'function') return Boolean(value())
+  return Boolean(value)
 }
