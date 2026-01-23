@@ -18,6 +18,8 @@ Why? An experimental project for fun and learning, exploring alternative syntax 
 
 ## Usage
 
+See examples in [examples/](./examples/).
+
 `npm install ifless` and use as follows:
 
 ```ts
@@ -50,8 +52,7 @@ when.ctx({
   a: true,
   b: false,
   c: false,
-  d: true,
-})`(#a AND #b) OR (NOT #c AND #d)`(() => {
+})`(#a AND #b) OR (NOT #c AND ${true})`(() => {
   console.log('condition met')
 })
 ```
@@ -88,14 +89,14 @@ when.ctx({
     when.ctx({ a })`NOT #a`(() => {})
     ```
 
-- With parentheses
+- Parentheses
   - Before:
     ```ts
-    if ((a && b) || (c && !d))
+    if ((a && b) || (!c && (d || e)))
     ```
   - After:
     ```ts
-    when.ctx({ a, b, c, d })`(#a AND #b) OR (#c AND NOT #d)`(() => {})
+    when.ctx({ a, b, c, d, e })`(#a AND #b) OR (NOT #c AND (#d OR #e))`(() => {})
     ```
 
 - Short-circuit evaluation
@@ -128,25 +129,17 @@ when.ctx({
     when.ctx({ a, b })`#a AND #b`(() => {})
     ```
 
-- Arbitrary nesting
-  - Before:
-    ```ts
-    if ((a && b) || (!c && (d || e)))
-    ```
-  - After:
-    ```ts
-    when.ctx({ a, b, c, d, e })`(#a AND #b) OR (NOT #c AND (#d OR #e))`(() => {})
-    ```
-
 ### Development
 
 ```bash
+bun run example     # run examples
 bun run build       # build all formats
 
 bun run test        # run all tests
 bun run lint        # check lint
 bun run lint:fix    # fix lint & format
 bun run typecheck   # check types
+
 
 bunx npm login      # login to npm
 bun publish         # publish to npm
