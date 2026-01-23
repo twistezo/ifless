@@ -39,8 +39,8 @@ when`${user.active} AND NOT ${isAdmin}`(() => {
 
 // with context and aliases
 when.ctx({
+  admin: isAdmin,
   userActive: user.active,
-  isAdmin: admin,
 })`#userActive AND NOT #admin`(() => {
   console.log('condition met')
 })

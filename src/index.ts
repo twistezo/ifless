@@ -1,180 +1,25 @@
-const assertNoFunctions = (context: Record<string, unknown>): void => {
-  for (const [key, value] of Object.entries(context)) {
-    if (typeof value === 'function') {
-      throw new Error(`Functions are not allowed in context: ${key}`)
-    }
-  }
-}
+import { whenCtx } from './context'
+import { whenBase } from './when'
 
-type WhenCtx = (
-  context: Record<string, unknown>,
-) => (strings: TemplateStringsArray, ...values: Operand[]) => (fn: () => void) => void
-
-const whenCtx: WhenCtx = context => {
-  assertNoFunctions(context)
-  return (strings: TemplateStringsArray, ...values: Operand[]) => {
-    let expr = ''
-    const ctxValues: Operand[] = []
-    strings.forEach((str, i) => {
-      expr += str.replace(/#([a-zA-Z0-9_.$]+)/g, (_, name) => {
-        if (!(name in context)) {
-          throw new Error(`Unknown context variable: #${name}`)
-        }
-        ctxValues.push(context[name])
-        return '${' + (ctxValues.length - 1) + '}'
-      })
-      if (i < values.length) {
-        expr += '${' + (ctxValues.length + i) + '}'
-      }
-    })
-    const allValues = [...ctxValues, ...values]
-    return (fn: () => void) => {
-      const tokens = tokenizeExpression(expr)
-      if (evaluateTokens(tokens, allValues)) {
-        fn()
-      }
-    }
-  }
-}
-
-export type Operand = unknown
-
-const toBoolean = (value: Operand): boolean => {
-  if (typeof value === 'function') {
-    return Boolean(value())
-  }
-
-  return value !== null && value !== undefined && Boolean(value)
-}
-
-const buildExpressionString = (strings: TemplateStringsArray, values: Operand[]): string => {
-  let result = ''
-  strings.forEach((str, i) => {
-    result += str
-    if (i < values.length) {
-      result += '${' + i + '}'
-    }
-  })
-  return result
-}
-
-const tokenizeExpression = (expression: string): string[] =>
-  expression
-    .replace(/\bAND\b/g, '&&')
-    .replace(/\bOR\b/g, '||')
-    .replace(/\bNOT\b/g, '!')
-    .split(/(\s+|\(|\))/)
-    .filter(token => token.trim().length > 0)
-
-const parseOperand = (token: string, values: Operand[]): (() => boolean) | string => {
-  if (token.startsWith('${')) {
-    const valueIndex = parseInt(token.slice(2, -1))
-    return () => toBoolean(values[valueIndex])
-  }
-  return token
-}
-
-type EvalState = {
-  index: number
-  tokens: string[]
-  values: Operand[]
-}
-
-const evaluateToken = (
-  state: EvalState,
-  evaluateExpression: (state: EvalState) => boolean,
-): unknown => {
-  const { tokens, values } = state
-  const token = tokens[state.index++]
-  if (!token) {
-    return true
-  }
-  if (token === '!') {
-    const operand = evaluateToken(state, evaluateExpression)
-    if (typeof operand === 'function') {
-      return () => !operand()
-    }
-
-    return !operand
-  }
-  if (token === '(') {
-    const value = evaluateExpression(state)
-    state.index++ // skip )
-
-    return value
-  }
-  if (token.startsWith('${')) {
-    return parseOperand(token, values)
-  }
-
-  return token
-}
-
-const evaluateExpression = (state: EvalState): boolean => {
-  let left = evaluateToken(state, evaluateExpression)
-  if (typeof left === 'function') {
-    left = left()
-  }
-  while (state.index < state.tokens.length) {
-    const operator = state.tokens[state.index]
-    if (operator === ')' || !operator) {
-      break
-    }
-    state.index++
-    switch (operator) {
-      case '&&': {
-        if (!left) {
-          evaluateToken(state, evaluateExpression)
-          return false
-        }
-        let right = evaluateToken(state, evaluateExpression)
-        if (typeof right === 'function') {
-          right = right()
-        }
-        left = left && right
-        break
-      }
-      case '||': {
-        if (left) {
-          evaluateToken(state, evaluateExpression)
-          return true
-        }
-        let right = evaluateToken(state, evaluateExpression)
-        if (typeof right === 'function') {
-          right = right()
-        }
-        left = left || right
-        break
-      }
-      default:
-        break
-    }
-  }
-  return left as boolean
-}
-
-const evaluateTokens = (tokens: string[], values: Operand[]): boolean => {
-  const state: EvalState = { index: 0, tokens, values }
-  return evaluateExpression(state)
-}
-
-type WhenFn = ((
-  strings: TemplateStringsArray,
-  ...values: Operand[]
-) => (fn: () => void) => void) & {
-  ctx: WhenCtx
-}
-
-const whenBase = (strings: TemplateStringsArray, ...values: Operand[]) => {
-  const expression = buildExpressionString(strings, values)
-  const evaluate = (fn: () => void): void => {
-    const tokens = tokenizeExpression(expression)
-    if (evaluateTokens(tokens, values)) {
-      fn()
-    }
-  }
-  return evaluate
-}
-
-export const when = whenBase as WhenFn
+export const when = whenBase
 when.ctx = whenCtx
+
+const user = { active: true }
+const isAdmin = false
+
+console.group('variables:')
+console.log('user.active', user.active)
+console.log('isAdmin', isAdmin)
+console.log('\n')
+console.groupEnd()
+
+when`${user.active} AND NOT ${isAdmin}`(() => {
+  console.log('\n\nwhen: condition met')
+})
+
+// when.ctx({
+//   admin: isAdmin,
+//   userActive: user.active,
+// })`#userActive AND NOT #admin`(() => {
+//   console.log('when.ctx: condition met')
+// })
