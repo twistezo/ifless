@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "ifless",
+      "name": "@twistezo/ifless",
       "devDependencies": {
         "@eslint/js": "^9.39.2",
         "@types/bun": "latest",
