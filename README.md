@@ -16,15 +16,18 @@ Conditional logic expressed using natural-language operators via JavaScript temp
 
 Why? An experimental project for fun and learning, exploring alternative syntax for conditional logic.
 
-## Usage
+## Examples
 
-See examples in [examples/](./examples/).
+- [CodeSandbox](https://codesandbox.io/p/sandbox/ifless-fwwn3p) -> check console output
+- Local [examples/](./examples/)
+
+## Usage
 
 `npm install ifless` and use as follows:
 
 ```ts
-import { when } from 'ifless'
-// or const { when } = require('ifless')
+import { when } from '@twistezo/ifless'
+// or const { when } = require('@twistezo/ifless')
 
 const user = { active: true }
 const isAdmin = false
