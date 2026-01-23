@@ -4,7 +4,7 @@ import { when } from '../src/index'
 
 describe('Security and negative scenarios', () => {
   it('handles undefined template and values', () => {
-    // @ts-expect-error intentional misuse for error handling
+    // @ts-expect-error intentional
     expect(() => when(undefined, undefined)).toThrow()
   })
 
@@ -43,6 +43,7 @@ describe('Security and negative scenarios', () => {
 
   // Implementation does not throw for __proto__ or constructor keys, so we only check that no error is thrown
   it('allows __proto__ as context key (no error thrown)', () => {
+    // @ts-expect-error intentional
     expect(() => when.ctx({ __proto__: { admin: true } })`#__proto__`(() => {})).not.toThrow()
   })
 

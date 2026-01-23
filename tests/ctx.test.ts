@@ -20,6 +20,7 @@ describe('when.ctx context logic', () => {
 
   it('throws if context contains a function', () => {
     const fn = () => true
+    // @ts-expect-error intentional
     expect(() => when.ctx({ fn })`#fn`(() => {})).toThrow('Functions are not allowed in context')
   })
 
