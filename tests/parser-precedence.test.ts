@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'bun:test'
+
 import { when } from '../src/index'
 
 describe('Parser precedence and error handling', () => {
