@@ -14,7 +14,7 @@
 
 Conditional logic expressed using natural-language operators via JavaScript template literals.
 
-Why? An experimental project for fun and learning, exploring alternative syntax for conditional logic.
+Why? An experimental project <b><ins>for fun and learning</ins></b>, exploring alternative syntax for conditional logic.
 
 ## Examples
 
