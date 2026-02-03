@@ -8,7 +8,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const b = 'hello'
     const c = 42
 
-    // Test a = true
     let whenResult = false
     when`${a}`(() => {
       whenResult = true
@@ -16,7 +15,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const evalResult1 = !!(eval('a') as boolean)
     expect(whenResult).toBe(evalResult1)
 
-    // Test b = 'hello'
     whenResult = false
     when`${b}`(() => {
       whenResult = true
@@ -24,7 +22,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const evalResult2 = !!(eval('b') as boolean)
     expect(whenResult).toBe(evalResult2)
 
-    // Test c = 42
     whenResult = false
     when`${c}`(() => {
       whenResult = true
@@ -38,7 +35,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const b = ''
     const c = 0
 
-    // Test a = false
     let whenResult = false
     when`${a}`(() => {
       whenResult = true
@@ -46,7 +42,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const evalResult1 = !!(eval('a') as boolean)
     expect(whenResult).toBe(evalResult1)
 
-    // Test b = ''
     whenResult = false
     when`${b}`(() => {
       whenResult = true
@@ -54,7 +49,6 @@ describe('Double negation (!!) - eval comparison', () => {
     const evalResult2 = !!(eval('b') as boolean)
     expect(whenResult).toBe(evalResult2)
 
-    // Test c = 0
     whenResult = false
     when`${c}`(() => {
       whenResult = true

@@ -60,8 +60,6 @@ describe('null/undefined as false - eval comparison', () => {
     when`NOT ${a}`(() => {
       whenResult = true
     })
-    // When a=null: NOT null = true (null is falsy, so !null = true)
-    // eval('!a') returns true
     const evalResult = eval('!a') as boolean
     expect(whenResult).toBe(evalResult)
     expect(whenResult).toBe(true)

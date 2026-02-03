@@ -8,7 +8,6 @@ describe('AND (&&) - eval comparison', () => {
     const b = true
     const c = false
 
-    // Test 1: true AND true
     let whenResult = false
     when`${a} AND ${b}`(() => {
       whenResult = true
@@ -16,7 +15,6 @@ describe('AND (&&) - eval comparison', () => {
     const evalResult1 = eval('a && b') as boolean
     expect(whenResult).toBe(evalResult1)
 
-    // Test 2: true AND false
     whenResult = false
     when`${a} AND ${c}`(() => {
       whenResult = true
@@ -24,7 +22,6 @@ describe('AND (&&) - eval comparison', () => {
     const evalResult2 = eval('a && c') as boolean
     expect(whenResult).toBe(evalResult2)
 
-    // Test 3: false AND true
     whenResult = false
     when`${c} AND ${a}`(() => {
       whenResult = true
@@ -32,7 +29,6 @@ describe('AND (&&) - eval comparison', () => {
     const evalResult3 = eval('c && a') as boolean
     expect(whenResult).toBe(evalResult3)
 
-    // Test 4: false AND false
     whenResult = false
     when`${c} AND ${c}`(() => {
       whenResult = true

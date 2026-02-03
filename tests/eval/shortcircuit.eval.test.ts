@@ -12,7 +12,6 @@ describe('Short-circuit evaluation - eval comparison', () => {
       whenResult = true
     })
 
-    // eval() with false && true = false
     const evalResult = eval('fn1() && fn2()')
     expect(whenResult).toBe(evalResult)
     expect(whenResult).toBe(false)
@@ -27,7 +26,6 @@ describe('Short-circuit evaluation - eval comparison', () => {
       whenResult = true
     })
 
-    // eval() with true || false = true
     const evalResult = eval('fn1() || fn2()')
     expect(whenResult).toBe(evalResult)
     expect(whenResult).toBe(true)
