@@ -18,8 +18,11 @@ Why? An experimental project <b><ins>for fun and learning</ins></b>, exploring a
 
 ## Examples
 
-- [CodeSandbox](https://codesandbox.io/p/sandbox/ifless-fwwn3p) -> check console output
-- Local [examples/](./examples/)
+- [CodeSandbox](https://codesandbox.io/p/sandbox/ifless-fwwn3p) (check console output)
+- [Local examples](./examples/)
+- [Unit tests](./tests/)
+- [Integration tests](./tests/integration/)
+- [Tests with JS eval() as comparator](./tests/eval/)
 
 ## Usage
 
@@ -62,13 +65,22 @@ when.ctx({
 
 ## Limitations
 
-Accepted: `${value}`, `#alias`, operators `AND`, `OR`, `NOT`, parentheses
+Accepted:
 
-Not accepted: other words, empty parentheses, double negation (`NOT NOT`, `!!${value}`, `#{!!value}`), alias without value in context, functions in context
+- `${value}`
+- `#alias`
+- operators `AND`, `OR`, `NOT`
+- parentheses `(`, `)`
 
----
+Not accepted:
 
-## Supported logic and features
+- other words
+- empty parentheses
+- double negations `NOT NOT`, `!!${value}`, `#{!!value}`
+- aliases without value in context
+- functions in context
+
+## Features
 
 - `AND`, `&&`
   - Before:
@@ -140,7 +152,7 @@ Not accepted: other words, empty parentheses, double negation (`NOT NOT`, `!!${v
     when.ctx({ a, b })`#a AND #b`(() => {})
     ```
 
-### Development
+## Development
 
 ```bash
 bun run example     # run examples
