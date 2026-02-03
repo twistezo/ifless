@@ -35,9 +35,10 @@ export const buildAliasedExpression = (
 
       if (!(name in context)) {
         throw new Error(`Unknown context variable: #${name}`)
+      } else {
+        contextValues.push(context[name])
+        return '${' + (contextValues.length - 1) + '}'
       }
-      contextValues.push(context[name])
-      return '${' + (contextValues.length - 1) + '}'
     })
 
     if (i < values.length) {

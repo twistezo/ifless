@@ -20,17 +20,29 @@ export const tokenizeExpression = (expression: string): Token[] => {
     .replace(/\bOR\b/g, '||')
     .replace(/\bNOT\b/g, '!')
     .split(/(\s+|\(|\))/)
-    .filter(t => t.trim().length > 0)
+    .filter((t: string) => t.trim().length > 0)
 
-  return rawTokens.map(t => {
-    if (t === '&&') return { type: 'and' }
-    else if (t === '||') return { type: 'or' }
-    else if (t === '!') return { type: 'not' }
-    else if (t === '(') return { type: 'lparen' }
-    else if (t === ')') return { type: 'rparen' }
-    else if (/^\$\{\d+\}$/.test(t)) return { index: parseInt(t.slice(2, -1)), type: 'operand' }
-    else {
-      throw new Error(`Invalid token: ${t}`)
+  return rawTokens.map((t: string) => {
+    switch (t) {
+      case '!':
+        return { type: 'not' }
+      case '&&':
+        return { type: 'and' }
+      case '(':
+        return { type: 'lparen' }
+      case ')':
+        return { type: 'rparen' }
+      case '||':
+        return { type: 'or' }
+      default:
+        if (/^\$\{\d+\}$/.test(t)) {
+          return {
+            index: parseInt(t.slice(2, -1)),
+            type: 'operand',
+          }
+        } else {
+          throw new Error(`Invalid token: ${t}`)
+        }
     }
   })
 }
@@ -83,20 +95,25 @@ const parseUnary = (state: EvaluationState): boolean => {
 
     if (!closing || closing.type !== 'rparen') {
       throw new SyntaxError('Missing closing parenthesis')
+    } else {
+      return value
     }
-    return value
   }
 
   if (token.type === 'operand') {
     return toBoolean(state.values[token.index])
+  } else {
+    throw new SyntaxError(`Unexpected token: ${JSON.stringify(token)}`)
   }
-  throw new SyntaxError(`Unexpected token: ${JSON.stringify(token)}`)
 }
 
 const peek = (state: EvaluationState): Token | undefined => state.tokens[state.index]
 const next = (state: EvaluationState): Token | undefined => state.tokens[state.index++]
 
 const toBoolean = (value: Operand): boolean => {
-  if (typeof value === 'function') return Boolean(value())
-  return Boolean(value)
+  if (typeof value === 'function') {
+    return Boolean(value())
+  } else {
+    return Boolean(value)
+  }
 }
